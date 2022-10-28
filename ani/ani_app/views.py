@@ -1,7 +1,12 @@
+from django.utils.timezone import now
+
+from django.contrib.auth.models import User
+from django.http import HttpRequest
 from django.shortcuts import render, HttpResponse
 from django.views.generic import TemplateView, ListView, DetailView
 
 from .models import Serials, Comments
+from .forms import CommentsForm
 
 
 def main(request: HttpResponse):
@@ -30,18 +35,41 @@ class IndexView(ContextMixnin, TemplateView):
 
 
 class AnimeDetailsView(ContextMixnin, DetailView):
+
     model = Serials
     template_name = 'ani_app/anime-details.html'
     context_object_name = 'serial'
     slug_url_kwarg = 'serial_slug'
-    extra_context = {'comments': Comments.objects.filter(is_published=True).order_by('date_published'),
-                     'serials': Serials.objects.filter(is_published=True).order_by('date_published')
-                     }
+
 
     def get_context_data(self, *, object_list=None, **kwargs):
         contex = super(AnimeDetailsView, self).get_context_data()
+        extra_context = {
+                         'comments': Comments.objects.filter(serial = self.object),
+                         'serials': Serials.objects.filter(is_published=True).order_by('date_published'),
+                         'form': CommentsForm(),
+                         }
         contex.update(self.context)
+        contex.update(extra_context)
         return contex
+
+    def post(self, request: HttpRequest,  *args, **kwargs):
+
+        form = CommentsForm(request.POST)
+
+        for field in form:
+            print("Field Error:", field.name, field.errors)
+
+        if form.is_valid():
+            post_details = form.save(commit=False)
+            post_details.author = request.user
+            post_details.serial = Serials.objects.get(slug=self.kwargs['serial_slug'])
+            post_details.date_published = now()
+            form.save()
+
+        return self.get(request=request)
+
+
 
 
 class AnimeWatchingView(ContextMixnin, TemplateView):

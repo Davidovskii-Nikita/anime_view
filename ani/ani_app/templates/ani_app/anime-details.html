@@ -86,7 +86,7 @@
                             {% for comment in comments %}
                             <div class="anime__review__item">
                                 <div class="anime__review__item__pic">
-                                    <img src="img/anime/review-1.jpg" alt="">
+                                    <img src="{% static 'img/anime/review-1.jpg' %}" alt="">
                                 </div>
                                 <div class="anime__review__item__text">
                                     <h6>{{ comment.author }} - <span>{{ comment.date_published }}</span></h6>
@@ -94,16 +94,24 @@
                                 </div>
                             </div>
                             {% endfor %}
-
                         </div>
+
                         <div class="anime__details__form">
                             <div class="section-title">
                                 <h5>Your Comment</h5>
                             </div>
-                            <form action="#">
-                                <textarea pl    aceholder="Your Comment"></textarea>
-                                <button type="submit"><i class="fa fa-location-arrow"></i> Review</button>
+
+                            <form  id="contactForm"  action="#"  method="post">
+                                {% csrf_token %}
+                                    <div class="form-floating">
+                                        <textarea {{ form.text }}  </textarea>
+                                    </div>
+
+                                    <button class="btn btn-primary text-uppercase" id="submitButton" type="submit"><i class="fa fa-location-arrow"></i> Review</button>
+
                             </form>
+
+
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-4">
