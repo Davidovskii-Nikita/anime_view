@@ -5,8 +5,9 @@ from django.http import HttpRequest
 from django.shortcuts import render, HttpResponse
 from django.views.generic import TemplateView, ListView, DetailView
 
-from .models import Serials, Comments
+from .models import Serials, Comments, Series
 from .forms import CommentsForm
+from .tasks import send_mail
 
 
 def main(request: HttpResponse):
@@ -46,7 +47,8 @@ class AnimeDetailsView(ContextMixnin, DetailView):
         contex = super(AnimeDetailsView, self).get_context_data()
         extra_context = {
                          'comments': Comments.objects.filter(serial = self.object),
-                         'serials': Serials.objects.filter(is_published=True).order_by('date_published'),
+                         'serials': Serials.objects.filter().order_by('date_published'),
+                         'series': Series.objects.filter(serial=self.object)[0],
                          'form': CommentsForm(),
                          }
         contex.update(self.context)
@@ -65,22 +67,11 @@ class AnimeDetailsView(ContextMixnin, DetailView):
             post_details.author = request.user
             post_details.serial = Serials.objects.get(slug=self.kwargs['serial_slug'])
             post_details.date_published = now()
+            #send_mail.delay(request.POST.get('comment.text'))
             form.save()
 
+
         return self.get(request=request)
-
-
-
-
-class AnimeWatchingView(ContextMixnin, TemplateView):
-
-    template_name = 'ani_app/anime-watching.html'
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        contex = super(AnimeWatchingView, self).get_context_data()
-        contex.update(self.context)
-        return contex
-
 
 
 class CategoriesView(ContextMixnin, ListView):
@@ -96,7 +87,7 @@ class CategoriesView(ContextMixnin, ListView):
         contex.update(self.context)
         return contex
 
-class  BlogView(ContextMixnin, TemplateView):
+class BlogView(ContextMixnin, TemplateView):
 
     template_name = 'ani_app/blog.html'
 

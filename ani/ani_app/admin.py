@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Serials, Comments
+from .models import Serials, Comments, Series
 
 @admin.action(description='Опубликовать')
 def make_published(self, request, queryset):
@@ -30,3 +30,14 @@ class CommentsAdmin(admin.ModelAdmin):
     readonly_fields = ('date_published', )
     actions = (make_published, make_unpublished)
     search_fields = ('author', 'serial', 'text')
+
+@admin.register(Series)
+class SeriesAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('title', 'season')}
+
+    list_display = ('title', 'season', 'serial','date_published','slug')
+    date_hierarchy = 'date_published'
+    list_filter = ('is_published', )
+    readonly_fields = ('date_published', )
+    actions = (make_published, make_unpublished)
+    search_fields = ('title', 'season', 'serial','date_published','slug')

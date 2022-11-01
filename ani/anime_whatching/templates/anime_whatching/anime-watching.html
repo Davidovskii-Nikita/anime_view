@@ -1,0 +1,83 @@
+{% extends  'anime_whatching/base.html' %}
+{% load static %}
+
+{% block content %}
+    <!-- Breadcrumb Begin -->
+    <div class="breadcrumb-option">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb__links">
+                        <a href="./index.html"><i class="fa fa-home"></i> Home</a>
+                        <a href="./categories.html">Categories</a>
+                        <a href="#">Romance</a>
+                        <span>Fate Stay Night: Unlimited Blade</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+
+    <!-- Anime Section Begin -->
+    <section class="anime-details spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="anime__video__player">
+                        <video id="player" playsinline controls data-poster="{{ series.image.url }}">
+                            <source src="videos/1.mp4" type="video/mp4" />
+                            <!-- Captions are optional -->
+                            <track kind="captions" label="English captions" src="#" srclang="en" default />
+                        </video>
+                    </div>
+                    <div class="anime__details__episodes">
+                        <div class="section-title">
+                            <h5>List Name</h5>
+                        </div>
+                        {% for seria in ser %}
+                        <a href={{ seria.slug }}>{{ seria.title }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="anime__details__review">
+                        <div class="section-title">
+                            <h5>Reviews</h5>
+                        </div>
+                        {% for comment in comments %}
+                            <div class="anime__review__item">
+                                <div class="anime__review__item__pic">
+                                    <img src="{% static 'img/anime/review-1.jpg' %}" alt="">
+                                </div>
+                                <div class="anime__review__item__text">
+                                    <h6>{{ comment.author }} - <span>{{ comment.date_published }}</span></h6>
+                                    <p>{{ comment.text }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                    <div class="anime__details__form">
+                            <div class="section-title">
+                                <h5>Your Comment</h5>
+                            </div>
+
+                            <form  id="contactForm"  action="#"  method="post">
+                                {% csrf_token %}
+                                    <div class="form-floating">
+                                        <textarea {{ form.text }}  </textarea>
+                                    </div>
+
+                                    <button class="btn btn-primary text-uppercase" id="submitButton" type="submit"><i class="fa fa-location-arrow"></i> Review</button>
+
+                            </form>
+
+
+                        </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Anime Section End -->
+{% endblock %}

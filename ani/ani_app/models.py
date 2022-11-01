@@ -23,17 +23,17 @@ class Comments (models.Model):
 
     text = models.TextField(
         max_length=250,
-        verbose_name = 'comment'
+        verbose_name = 'comment', null=True
     )
 
     date_published = models.DateTimeField(
         default=now(),
-        verbose_name='date_published'
+        verbose_name='date_published', null=True
     )
 
     is_published = models.BooleanField(
         default=False,
-        verbose_name='is_published'
+        verbose_name='is_published', null=True
     )
 
     def __str__(self):
@@ -44,8 +44,8 @@ class Comments (models.Model):
         verbose_name_plural = 'Коментарии'
         ordering = ('date_published', )
 
-
 class Serials(models.Model):
+
     title = models.CharField(
         max_length=30,
         verbose_name='title',
@@ -127,3 +127,50 @@ class Serials(models.Model):
         verbose_name = 'Сериал'
         verbose_name_plural = 'Сериалы'
         ordering = ('date_published', 'genre',)
+
+
+class Series(models.Model):
+
+    title = models.CharField(
+        max_length= 30,
+        verbose_name='title',
+        blank=True, null=True,
+    )
+    season = models.IntegerField(
+        verbose_name='season',
+        null=True
+    )
+    serial = models.ForeignKey(
+        Serials,
+        on_delete=models.PROTECT,
+        blank=True, null=True,
+        verbose_name='serial'
+    )
+    image = models.ImageField(
+        upload_to='series_image/',
+        verbose_name='image',
+        null=True
+    )
+    date_published = models.DateTimeField(
+        default=now(),
+        verbose_name='date published'
+    )
+    slug = models.SlugField(
+        unique=True,
+        verbose_name='URL'
+    )
+    is_published = models.BooleanField (
+        default=False,
+        verbose_name='is_published'
+    )
+
+    def __str__(self):
+        return self.serial
+
+    def get_absolute_url(self):
+        return reverse('series', kwargs={'series_slug': self.slug})
+
+    class Meta:
+        verbose_name = 'Серия'
+        verbose_name_plural = 'Серии'
+        ordering = ('date_published', )
