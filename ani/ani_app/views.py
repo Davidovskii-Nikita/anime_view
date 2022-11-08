@@ -5,7 +5,7 @@ from django.http import HttpRequest
 from django.shortcuts import render, HttpResponse
 from django.views.generic import TemplateView, ListView, DetailView
 
-from .models import Serials, Comments, Series
+from .models import Serials, Comments, Series, Categories
 from .forms import CommentsForm
 from .tasks import send_mail
 
@@ -24,12 +24,16 @@ class ContextMixnin:
     'linkedin': 'https://linkedin.com',
     }
 
-
 class IndexView(ContextMixnin, TemplateView):
     template_name = 'ani_app/index.html'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         contex = super(IndexView, self).get_context_data()
+        extra_context = {
+                        'categories': Categories.objects.all(),
+                        'serials': Serials.objects.filter(is_published = True)
+                         }
+        contex.update(extra_context)
         contex.update(self.context)
         return contex
 
@@ -50,6 +54,7 @@ class AnimeDetailsView(ContextMixnin, DetailView):
                          'serials': Serials.objects.filter().order_by('date_published'),
                          'series': Series.objects.filter(serial=self.object)[0],
                          'form': CommentsForm(),
+                         'categories': Categories.objects.all()
                          }
         contex.update(self.context)
         contex.update(extra_context)
@@ -63,27 +68,35 @@ class AnimeDetailsView(ContextMixnin, DetailView):
             print("Field Error:", field.name, field.errors)
 
         if form.is_valid():
+
             post_details = form.save(commit=False)
             post_details.author = request.user
-            post_details.serial = Serials.objects.get(slug=self.kwargs['serial_slug'])
+            post_details.serial =Serials.objects.get(slug=self.kwargs['serial_slug'])
             post_details.date_published = now()
             #send_mail.delay(request.POST.get('comment.text'))
-            form.save()
 
+            form.save()
+            comments = Comments.objects.filter(serial=Serials.objects.get(slug=self.kwargs['serial_slug']))
+            post_details.serial.count_comments = len(comments)
+            post_details.serial.save()
 
         return self.get(request=request)
 
 
-class CategoriesView(ContextMixnin, ListView):
-    model = Serials
+class CategoriesView(ContextMixnin, DetailView):
+    model = Categories
     template_name = 'ani_app/categories.html'
-    context_object_name = 'serials'
-
-    def get_queryset(self):
-        return Serials.objects.filter(is_published=True).order_by('date_published')
+    context_object_name = 'categories'
+    slug_url_kwarg = 'category_slug'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         contex = super(CategoriesView, self).get_context_data()
+        extra_context = {
+                         'categories' : Categories.objects.all(),
+                         'cat': self.object,
+                         'serials': Serials.objects.filter(category =self.object)
+                         }
+        contex.update(extra_context)
         contex.update(self.context)
         return contex
 

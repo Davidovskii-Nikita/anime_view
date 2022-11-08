@@ -29,6 +29,7 @@ class AnimeWatchingView(ContextMixnin, DetailView):
     def get_context_data(self, *, object_list=None, **kwargs):
         contex = super(AnimeWatchingView, self).get_context_data()
         extra_contex = {
+            'serial_title': self.object.serial,
             'ser': Series.objects.filter(serial = self.object.serial),
             'comments': Comments.objects.filter(serial=self.object.serial),
             'form': CommentsForm(),

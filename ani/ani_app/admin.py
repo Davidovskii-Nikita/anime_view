@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from .models import Serials, Comments, Series
+
+from .models import Serials, Comments, Series , Categories
 
 @admin.action(description='Опубликовать')
 def make_published(self, request, queryset):
@@ -33,6 +34,7 @@ class CommentsAdmin(admin.ModelAdmin):
 
 @admin.register(Series)
 class SeriesAdmin(admin.ModelAdmin):
+
     prepopulated_fields = {'slug': ('title', 'season')}
 
     list_display = ('title', 'season', 'serial','date_published','slug')
@@ -41,3 +43,15 @@ class SeriesAdmin(admin.ModelAdmin):
     readonly_fields = ('date_published', )
     actions = (make_published, make_unpublished)
     search_fields = ('title', 'season', 'serial','date_published','slug')
+
+
+
+@admin.register(Categories)
+class CategoriesAdmin(admin.ModelAdmin):
+
+    prepopulated_fields = {'slug': ('title','count')}
+
+    list_display = ('title', 'count')
+    actions = (make_published, make_unpublished)
+    search_fields = ('title', 'count', 'serial')
+

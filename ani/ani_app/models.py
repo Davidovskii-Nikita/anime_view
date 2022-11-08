@@ -44,7 +44,48 @@ class Comments (models.Model):
         verbose_name_plural = 'Коментарии'
         ordering = ('date_published', )
 
-class Serials(models.Model):
+class Categories (models.Model):
+
+    title = models.CharField(
+        max_length=50,
+        verbose_name='title',
+        unique=True
+    )
+    count = models.IntegerField(
+        verbose_name='count',
+        default=0
+    )
+
+    serial = models.ManyToManyField(
+        'Serials',
+        blank=True, null=True,
+        verbose_name='serials'
+    )
+
+    slug = models.SlugField(
+        unique=True,
+        verbose_name='URL'
+    )
+
+    def __str__(self):
+        return str(self.title)
+
+
+    def get_absolute_url(self):
+        return reverse('serials', kwargs={'category_slug': self.slug})
+
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
+        ordering = ('title',)
+
+class Serials (models.Model):
+
+    category = models.ManyToManyField(
+        Categories,
+        blank=True, null=True,
+        verbose_name='category'
+    )
 
     title = models.CharField(
         max_length=30,
@@ -116,6 +157,11 @@ class Serials(models.Model):
         verbose_name='pk_comm'
     )
 
+    count_comments = models.IntegerField(
+        default= 0,
+        verbose_name= 'count_comments'
+    )
+
     def __str__(self):
         return self.title
 
@@ -142,7 +188,7 @@ class Series(models.Model):
     )
     serial = models.ForeignKey(
         Serials,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         blank=True, null=True,
         verbose_name='serial'
     )
@@ -164,8 +210,9 @@ class Series(models.Model):
         verbose_name='is_published'
     )
 
+
     def __str__(self):
-        return self.serial
+        return self.title
 
     def get_absolute_url(self):
         return reverse('series', kwargs={'series_slug': self.slug})

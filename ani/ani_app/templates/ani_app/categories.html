@@ -9,9 +9,9 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="breadcrumb__links">
-                        <a href="{% url 'main' %}"><i class="fa fa-home"></i> Home</a>
-                        <a href="{% url 'categories' %}">Categories</a>
-                        <span>Romance</span>
+                        <a href="./index.html"><i class="fa fa-home"></i> Home</a>
+                        <a href="./categories.html">Categories</a>
+                        <span>{{ cat }}</span>
                     </div>
                 </div>
             </div>
@@ -29,7 +29,7 @@
                             <div class="row">
                                 <div class="col-lg-8 col-md-8 col-sm-6">
                                     <div class="section-title">
-                                        <h4>Romance</h4>
+                                        <h4>{{ cat }}</h4>
                                     </div>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-6">
@@ -50,13 +50,14 @@
                                 <div class="product__item">
                                     <div class="product__item__pic set-bg" data-setbg={{ serial.image.url }}>
                                         <div class="ep">18 / 18</div>
-                                        <div class="comment"><i class="fa fa-comments"></i> 11</div>
-                                        <div class="view"><i class="fa fa-eye"></i> {{serial.views}}</div>
+                                        <div class="comment"><i class="fa fa-comments"></i> {{ serial.count_comments }}</div>
+                                        <div class="view"><i class="fa fa-eye"></i> {{ serial.views }}</div>
                                     </div>
                                     <div class="product__item__text">
                                         <ul>
-                                            <li>{{ serial.genre }}</li>
-                                            <li>{{ serial.status }}</li>
+                                            {% for cat in serial.category.all %}
+                                            <li>{{ cat.title }}</li>
+                                            {% endfor %}
                                         </ul>
                                         <h5><a href={{ serial.slug }}/>{{ serial.title }}</a></h5>
                                     </div>
@@ -151,7 +152,7 @@
         </div>
         <div class="product__sidebar__comment__item">
             <div class="product__sidebar__comment__item__pic">
-                <img src="{% static 'img/sidebar/comme' %}nt-3.jpg" alt="">
+                <img src="{% static 'img/sidebar/comment-3.jpg' %}" alt="">
             </div>
             <div class="product__sidebar__comment__item__text">
                 <ul>
@@ -181,5 +182,4 @@
 </div>
 </div>
 </section>
-<!-- Product Section End -->
 {% endblock %}

@@ -1,4 +1,5 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="zxx">
 
@@ -48,8 +49,11 @@
                         <nav class="header__menu mobile-menu">
                             <ul>
                                 <li class="active"><a href="{% url 'main' %}">Homepage</a></li>
-                                <li><a href="{% url 'categories' %}">Categories <span class="arrow_carrot-down"></span></a>
+                                <li><a href="#">Categories <span class="arrow_carrot-down"></span></a>
                                     <ul class="dropdown">
+                                        {% for category in categories %}
+                                        <li><a href={{ category.slug }}>{{ category.title }}</a></li>
+                                        {% endfor %}
                                         <li><a href="{% url 'blog_details' %}">Blog Details</a></li>
                                     </ul>
                                 </li>
@@ -88,7 +92,7 @@
                 <div class="footer__nav">
                     <ul>
                         <li class="active"><a href="{% url 'main' %}">Homepage</a></li>
-                        <li><a href="{% url 'categories' %}">Categories</a></li>
+                        <li><a href="#  ">Categories</a></li>
                         <li><a href="{% url 'blog' %}">Our Blog</a></li>
                         <li><a href="#">Contacts</a></li>
                     </ul>
