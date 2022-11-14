@@ -1,9 +1,10 @@
-
+from django.conf import settings
+from django.contrib.auth import password_validation
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 from django.utils.timezone import now
-
 
 
 class Comments (models.Model):
@@ -72,7 +73,7 @@ class Categories (models.Model):
 
 
     def get_absolute_url(self):
-        return reverse('serials', kwargs={'category_slug': self.slug})
+        return reverse('categories', args=[str(self.slug)])
 
     class Meta:
         verbose_name = 'Категория'

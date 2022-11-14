@@ -1,5 +1,4 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.contrib.auth.views import LoginView
@@ -7,6 +6,7 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import CreateView
 
+from ani_app.models import User
 from .forms import SignUpForm, SignInForm
 
 

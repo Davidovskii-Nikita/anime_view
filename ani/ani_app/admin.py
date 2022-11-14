@@ -1,7 +1,7 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 
-
-from .models import Serials, Comments, Series , Categories
+from .models import Serials, Comments, Series , Categories, User
 
 @admin.action(description='Опубликовать')
 def make_published(self, request, queryset):
@@ -11,6 +11,7 @@ def make_published(self, request, queryset):
 @admin.action(description='Снять с публикации')
 def make_unpublished(self, request, queryset):
     queryset.update(is_published=False)
+
 
 @admin.register(Serials)
 class SerialsAdmin(admin.ModelAdmin):

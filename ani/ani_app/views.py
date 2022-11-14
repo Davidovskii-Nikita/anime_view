@@ -74,7 +74,6 @@ class AnimeDetailsView(ContextMixnin, DetailView):
             post_details.serial =Serials.objects.get(slug=self.kwargs['serial_slug'])
             post_details.date_published = now()
             #send_mail.delay(request.POST.get('comment.text'))
-
             form.save()
             comments = Comments.objects.filter(serial=Serials.objects.get(slug=self.kwargs['serial_slug']))
             post_details.serial.count_comments = len(comments)
@@ -91,10 +90,16 @@ class CategoriesView(ContextMixnin, DetailView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         contex = super(CategoriesView, self).get_context_data()
+        last_comments = []
+        print(type(Comments.objects.all()))
+        for comment in Comments.objects.all():
+            if (now() - comment.date_published).total_seconds() < 3600:
+                last_comments.append(comment)
         extra_context = {
                          'categories' : Categories.objects.all(),
                          'cat': self.object,
-                         'serials': Serials.objects.filter(category =self.object)
+                         'serials': Serials.objects.filter(category =self.object),
+                         'last_comments': last_comments,
                          }
         contex.update(extra_context)
         contex.update(self.context)

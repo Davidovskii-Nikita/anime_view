@@ -95,6 +95,7 @@
                             </div>
                             {% endfor %}
                         </div>
+                        {% if user.is_authenticated %}
                         <div class="anime__details__form">
                             <div class="section-title">
                                 <h5>Your Comment</h5>
@@ -110,8 +111,8 @@
 
                             </form>
 
-
                         </div>
+                        {% endif %}
                     </div>
                     <div class="col-lg-4 col-md-4">
                         <div class="anime__details__sidebar">

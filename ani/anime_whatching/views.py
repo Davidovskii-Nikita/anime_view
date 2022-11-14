@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.utils.timezone import now
 from django.views.generic import DetailView
 
-from ani_app.models import Series, Comments, Serials
+from ani_app.models import Series, Comments, Serials, Categories
 
 from ani_app.forms import CommentsForm
 
@@ -33,6 +33,7 @@ class AnimeWatchingView(ContextMixnin, DetailView):
             'ser': Series.objects.filter(serial = self.object.serial),
             'comments': Comments.objects.filter(serial=self.object.serial),
             'form': CommentsForm(),
+            'categories': Categories.objects.all(),
 
         }
         print(self.object.serial)
