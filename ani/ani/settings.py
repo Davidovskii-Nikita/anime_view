@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'ani_app.apps.AniAppConfig',
     'registration.apps.RegistrationConfig',
     'anime_whatching.apps.AnimeWhatchingConfig',
+    'blog.apps.BlogConfig',
 ]
 
 MIDDLEWARE = [

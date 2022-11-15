@@ -37,8 +37,6 @@ class IndexView(ContextMixnin, TemplateView):
         contex.update(self.context)
         return contex
 
-
-
 class AnimeDetailsView(ContextMixnin, DetailView):
 
     model = Serials
@@ -61,6 +59,7 @@ class AnimeDetailsView(ContextMixnin, DetailView):
         return contex
 
     def post(self, request: HttpRequest,  *args, **kwargs):
+        global list_of_comm_id
 
         form = CommentsForm(request.POST)
 
@@ -68,10 +67,9 @@ class AnimeDetailsView(ContextMixnin, DetailView):
             print("Field Error:", field.name, field.errors)
 
         if form.is_valid():
-
             post_details = form.save(commit=False)
             post_details.author = request.user
-            post_details.serial =Serials.objects.get(slug=self.kwargs['serial_slug'])
+            post_details.serial = Serials.objects.get(slug=self.kwargs['serial_slug'])
             post_details.date_published = now()
             #send_mail.delay(request.POST.get('comment.text'))
             form.save()
@@ -89,18 +87,15 @@ class CategoriesView(ContextMixnin, DetailView):
     slug_url_kwarg = 'category_slug'
 
     def get_context_data(self, *, object_list=None, **kwargs):
+        global list_of_comm_id
         contex = super(CategoriesView, self).get_context_data()
-        last_comments = []
-        print(type(Comments.objects.all()))
-        for comment in Comments.objects.all():
-            if (now() - comment.date_published).total_seconds() < 3600:
-                last_comments.append(comment)
         extra_context = {
                          'categories' : Categories.objects.all(),
                          'cat': self.object,
                          'serials': Serials.objects.filter(category =self.object),
-                         'last_comments': last_comments,
+                         'comments': Comments.objects.all()[::-1][:3],
                          }
+
         contex.update(extra_context)
         contex.update(self.context)
         return contex

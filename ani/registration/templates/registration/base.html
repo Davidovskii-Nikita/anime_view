@@ -54,7 +54,6 @@
                                         {% for category in categories %}
                                         <li><a href={{ category.slug }}>{{ category.title }}</a></li>
                                         {% endfor %}
-                                        <li><a href="{% url 'blog_details' %}">Blog Details</a></li>
                                     </ul>
                                 </li>
                                 <li><a href="{% url 'blog' %}">Our Blog</a></li>

@@ -211,6 +211,11 @@ class Series(models.Model):
         verbose_name='is_published'
     )
 
+    video = models.FileField(
+        blank= True, null=True,
+        verbose_name='video'
+    )
+
 
     def __str__(self):
         return self.title
