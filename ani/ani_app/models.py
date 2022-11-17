@@ -7,6 +7,17 @@ from django.utils.safestring import mark_safe
 from django.utils.timezone import now
 
 
+class WithVisitCounter(models.Model):
+
+    visitors = models.ManyToManyField(
+        to=settings.AUTH_USER_MODEL,
+        related_name='%(model_name)s_visits'
+    )
+
+    class Meta:
+        abstract = True
+
+
 class Comments (models.Model):
 
     author = models.ForeignKey(
@@ -80,7 +91,7 @@ class Categories (models.Model):
         verbose_name_plural = 'Категории'
         ordering = ('title',)
 
-class Serials (models.Model):
+class Serials ( WithVisitCounter, models.Model):
 
     category = models.ManyToManyField(
         Categories,

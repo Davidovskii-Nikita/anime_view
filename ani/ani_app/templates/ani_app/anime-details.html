@@ -8,9 +8,9 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="breadcrumb__links">
-                        <a href="./index.html"><i class="fa fa-home"></i> Home</a>
-                        <a href="./categories.html">Categories</a>
-                        <span>Romance</span>
+                        <a href="{% url 'main' %}"><i class="fa fa-home"></i> Home</a>
+                         <a >{{ serial.category.all|first }}</a>
+                        <span>{{ serial.title }}</span>
                     </div>
                 </div>
             </div>

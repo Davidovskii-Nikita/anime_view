@@ -3,10 +3,15 @@ from django.utils.timezone import now
 from django.urls import reverse
 from django.contrib.auth.models import User
 
-from ani_app.models import Categories
+from ani_app.models import Categories, WithVisitCounter
 
 
-class Blog(models.Model):
+class Blog(WithVisitCounter, models.Model):
+
+    views = models.IntegerField(
+        verbose_name='views',
+        default= 0,
+    )
 
     title = models.CharField(
         verbose_name= 'title',
@@ -21,9 +26,8 @@ class Blog(models.Model):
         verbose_name='date_published',
         null=True
     )
-    text = models.CharField(
+    text = models.TextField(
         verbose_name='text',
-        max_length=500,
     )
     author = models.ForeignKey(
         User,
