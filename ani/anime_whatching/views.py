@@ -6,7 +6,7 @@ from django.views.generic import DetailView
 from ani_app.models import Series, Comments, Serials, Categories
 
 from ani_app.forms import CommentsForm
-
+from blog.models import Blog
 
 
 class ContextMixnin:
@@ -34,7 +34,6 @@ class AnimeWatchingView(ContextMixnin, DetailView):
             'comments': Comments.objects.filter(serial=self.object.serial),
             'form': CommentsForm(),
             'categories': Categories.objects.all(),
-
         }
         print(self.object.serial)
         contex.update(self.context)

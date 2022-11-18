@@ -1,9 +1,9 @@
-from django.core.paginator import Paginator
-from django.shortcuts import render
-from django.views.generic import TemplateView, DetailView, ListView
+from django.views.generic import DetailView, ListView
 from django.views.generic.detail import SingleObjectMixin
+from rest_framework import generics, viewsets
 
 from ani_app.models import Categories
+from blog.serializers import BLogsSerializer
 from ani_app.views import BlogView
 from blog.models import Blog
 
@@ -24,14 +24,20 @@ class ContextMixnin_With_Wisitors(SingleObjectMixin, ContextMixnin):
 
     def get_object(self, *args, **kwargs):
         obj = super().get_object(*args, **kwargs)
-        obj.visitors.add(self.request.user)
-        return obj
+        if str(self.request.user) != 'AnonymousUser':
+            obj.visitors.add(self.request.user)
+            return obj
+        else:
+            return obj
 
     def get_context_data(self, *args, **kwargs):
         cd = super().get_context_data(*args, **kwargs)
         cd['visits'] = self.object.visitors.count()
         return cd
 
+class BlogApiView(viewsets.ModelViewSet):
+    queryset = Blog.objects.all()
+    serializer_class = BLogsSerializer
 
 
 class BlogView(ContextMixnin,ListView):
@@ -83,16 +89,21 @@ class BlogDetailsView(ContextMixnin_With_Wisitors, DetailView):
     def get_context_data(self, *, object_list=None, **kwargs):
         contex = super(BlogDetailsView, self).get_context_data()
         contex['categories'] = Categories.objects.all()
-        # contex['blog'] = Blog.objects.filter(is_published = True)
+
+        contex['slug'] = Blog.objects.filter(slug = self.kwargs['blog_slug']).values('slug')[0]['slug']
 
         this_blog = Blog.objects.filter(is_published = True).values('slug')
         p,n= get_next_blog(this_blog,self.kwargs['blog_slug'])
         contex['previous_index'] = p
         contex['next_index'] = n
 
-        contex['previous_title']=Blog.objects.filter(slug = p)
-        contex['next_title']= Blog.objects.filter(slug =n)
-        print(contex['next_title'])
+        contex['previous_title']=Blog.objects.filter(slug = p)[0]
+        contex['next_title']= Blog.objects.filter(slug =n)[0]
+        if contex['slug'] == contex['previous_index']:
+            print("whtefsef")
+        else:
+            print('nihuase')
+
         blog = Blog.objects.get(title = self.object)
         blog.views = contex['visits']
         blog.save(update_fields=['views'])

@@ -11,7 +11,7 @@ class WithVisitCounter(models.Model):
 
     visitors = models.ManyToManyField(
         to=settings.AUTH_USER_MODEL,
-        related_name='%(model_name)s_visits'
+        related_name='%(model_name)s_visits' 
     )
 
     class Meta:
@@ -91,7 +91,7 @@ class Categories (models.Model):
         verbose_name_plural = 'Категории'
         ordering = ('title',)
 
-class Serials ( WithVisitCounter, models.Model):
+class Serials( WithVisitCounter, models.Model):
 
     category = models.ManyToManyField(
         Categories,

@@ -1,19 +1,14 @@
-from django.core import paginator
-from django.core.paginator import Paginator
 from django.db.models import Max
 from django.utils.timezone import now
 
-from django.contrib.auth.models import User
-from django.http import HttpRequest, request
+from django.http import HttpRequest
 from django.shortcuts import render, HttpResponse
 from django.views.generic import TemplateView, ListView, DetailView
 
 from blog.models import Blog
 from .models import Serials, Comments, Series, Categories
 from .forms import CommentsForm
-from .tasks import send_mail
 
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.detail import SingleObjectMixin
 
 
@@ -34,8 +29,11 @@ class ContextMixnin_With_Wisitors(SingleObjectMixin):
 
     def get_object(self, *args, **kwargs):
         obj = super().get_object(*args, **kwargs)
-        obj.visitors.add(self.request.user)
-        return obj
+        if str(self.request.user) != 'AnonymousUser':
+            obj.visitors.add(self.request.user)
+            return obj
+        else:
+            return obj
 
     def get_context_data(self, *args, **kwargs):
         cd = super().get_context_data(*args, **kwargs)
@@ -57,11 +55,22 @@ class IndexView(ContextMixnin, TemplateView):
         contex = super(IndexView, self).get_context_data()
         extra_context = {
                         'categories': Categories.objects.all(),
-                        'serials': Serials.objects.filter(is_published = True)
+                        'serials': Serials.objects.filter(is_published = True).order_by('-views').annotate(Max('views'))[:3],
+                        'blogs':Blog.objects.all().order_by('-views').annotate(Max('views'))[:3],
+                        'comments': Comments.objects.all()[::-1][:3],
+                        'trend_now': Serials.objects.filter(category__title = "Trending Now")[:6],
+                        'trend_now_slug': Categories.objects.filter(title = "Trending Now")[0].slug,
+                        'top_viws': Serials.objects.filter(category__title = "Top views")[:6],
+                        'top_viws_slug': Categories.objects.filter(title="Top views")[0].slug,
+                        'popular_show': Serials.objects.filter(category__title = "Popular show")[:6],
+                        'popular_show_slug': Categories.objects.filter(title="Popular show")[0].slug,
                          }
+        # print(extra_context['trend_now_slug'][0].slug)
         contex.update(extra_context)
         contex.update(self.context)
         return contex
+
+
 
 class AnimeDetailsView(ContextMixnin_With_Wisitors, DetailView):
 
@@ -81,10 +90,13 @@ class AnimeDetailsView(ContextMixnin_With_Wisitors, DetailView):
                          'form': CommentsForm(),
                          'categories': Categories.objects.all(),
                          'serial': Serials.objects.get(title = self.object),
+                         'blogs': Blog.objects.all()[:3]
                          }
         contex.update(self.context)
 
-        serial = Serials.objects.get(title = self.object)
+        print(self.request.user)
+
+        serial = extra_context['serial']
         serial.views = contex['visits']
         serial.save(update_fields=['views'])
 
@@ -164,5 +176,6 @@ class Categories_lsitView(ContextMixnin, ListView):
         context = super(Categories_lsitView, self).get_context_data()
         context['categories'] = Categories.objects.all()
         context['comments'] = Comments.objects.all()[::-1][:3]
+        context['blogs'] =Blog.objects.all().order_by('-views').annotate(Max('views'))[:3]
         context.update(self.context)
         return context

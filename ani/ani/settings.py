@@ -27,6 +27,13 @@ SECRET_KEY = 'django-insecure-#^jhr6w!!mt!d^iywd$&&7!gkfm&&e&v#=j)mi+z@83#id2=)w
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+
+REST_FRAMEWORK = {
+        'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}
+
 ALLOWED_HOSTS = []
 
 # Application definition
@@ -38,10 +45,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'ani_app.apps.AniAppConfig',
     'registration.apps.RegistrationConfig',
     'anime_whatching.apps.AnimeWhatchingConfig',
     'blog.apps.BlogConfig',
+
 ]
 
 MIDDLEWARE = [

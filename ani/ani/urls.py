@@ -18,15 +18,15 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 
+from blog.views import BlogApiView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('registration.urls')),
     path('', include('blog.urls')),
     path('', include('ani_app.urls')),
-
-
     path('', include('anime_whatching.urls')),
+
 
 ]
 
